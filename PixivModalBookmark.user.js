@@ -437,6 +437,7 @@ THE SOFTWARE.
             },
           })
           .done(function() {
+            //かなり乱暴だけど元のいいねボタンは削除(仕様の把握ができなかった)
             that.mainForm.$niceButton.remove();
             that.mModalForm.$mNiceButton.attr('disabled', true);
           })
