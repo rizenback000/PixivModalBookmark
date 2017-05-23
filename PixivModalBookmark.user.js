@@ -32,8 +32,6 @@ THE SOFTWARE.
 */
 
 (function($) {
-  'use strict';
-
   /**
    * Pixivがデフォルトで持っているものを管理しようとしたクラス
    */
@@ -64,7 +62,7 @@ THE SOFTWARE.
       };
 
       const ev = this.rb03.pixivOfficial.eigenValues;
-      if (ev.artType_ == 'illust') {
+      if (ev.artType_ === 'illust') {
         ev.contentId_ = $commentForm.children('input[name="illust_id"]').val();
       } else {
         ev.contentId_ = $commentForm.children('input[name="id"]').val();
@@ -222,7 +220,8 @@ THE SOFTWARE.
     /**
      * constructor - コンストラクタ
      *
-     * @param  {object} $showButtonPanretObject モーダルブックマークを表示するボタンを設置する親となるjQueryObject
+     * @param  {object} $showButtonPanretObject
+     * モーダルブックマークを表示するボタンを設置する親となるjQueryObject
      * @return {void}                         description
      */
     constructor($showButtonPanretObject) {
@@ -233,8 +232,10 @@ THE SOFTWARE.
 
       this.rb03.modalBookmark = {
         $recommendButton_: $('<div></div>', {
-          text: '▼この作品をブックマークした人はこんな作品もブックマークしています▼',
-          style: 'width:100%; background-color:#ffffff; cursor:pointer; text-align:center',
+          text: '▼この作品をブックマークした人は'+
+                'こんな作品もブックマークしています▼',
+          style: 'width:100%; background-color:#ffffff; '+
+                 'cursor:pointer; text-align:center',
         }),
         $recommendIFrame_: $('<iframe></iframe>', {
           src: 'bookmark_detail.php?illust_id=' + cId,
@@ -270,10 +271,10 @@ THE SOFTWARE.
       const mb = this.rb03.modalBookmark;
 
       // モーダルの閉じるボタンに意味を持たせる(デフォだと機能してない)
-      mb.$closeButton_.click((function(e) {
+      mb.$closeButton_.click(function(e) {
         e.preventDefault();
         mb.$modalPanel_.hide();
-      }));
+      });
 
       // モーダルフォームに良いねボタンとブクマ解除ボタンの追加
       mb.$bookmarkAddButton_.after(mb.$niceButton_);
@@ -289,8 +290,8 @@ THE SOFTWARE.
       // いいね済みならボタン無効化
       mb.$niceButton_.attr('disabled', this.isRated());
       // サムネイルがデフォルトだとsrc属性を設定されていないので、その設定
-      const $mModalThumbnail = mb.$modalPanel_.find('img.bookmark_modal_thumbnail');
-      $mModalThumbnail.attr('src', $mModalThumbnail.attr('data-src'));
+      const $modalThumb = mb.$modalPanel_.find('img.bookmark_modal_thumbnail');
+      $modalThumb.attr('src', $modalThumb.attr('data-src'));
 
       // おすすめ以外の部分がいらないので削除(jqueryのonloadだと何故か動かない)
       mb.$recommendIFrame_.on('load', function() {
@@ -328,7 +329,7 @@ THE SOFTWARE.
        * @param  {void} function( description
        * @return {void}           description
        */
-      const setRecommendIframeCSS = (function() {
+      const setRecommendIframeCSS = function() {
         const windowH = $(window).height();
         const modalH = $('.layout-fixed').outerHeight(true);
         const css = {
@@ -336,7 +337,7 @@ THE SOFTWARE.
           height: windowH - modalH - 30,
         };
         mb.$recommendIFrame_.css(css);
-      });
+      };
 
       // ウィンドウリサイズ時にも対応
       $(window).resize(setRecommendIframeCSS);
@@ -347,38 +348,38 @@ THE SOFTWARE.
       // おすすめ表示ボタンの処理
       // 本当はiframeなんて使いたくなかったけど、ajaxだとオートビューが効かないし
       // おすすめコンテンツ取得できないし、自分でオートビューさせるのは手間すぎるので。
-      mb.$recommendButton_.click((function() {
-        if (mb.$modalPanel_.find('iframe').length == 0) {
+      mb.$recommendButton_.click(function() {
+        if (mb.$modalPanel_.find('iframe').length === 0) {
           mb.$modalPanel_.find('.layout-fixed').after(mb.$recommendIFrame_);
           setRecommendIframeCSS();
         }
         mb.$recommendIFrame_.toggle();
-      }));
+      });
 
 
       // ブックマーク追加ボタンの処理
-      mb.$bookmarkAddButton_.click((function(e) {
+      mb.$bookmarkAddButton_.click(function(e) {
         const that = this;
         e.preventDefault();
 
 
         $.ajax({
-            type: 'POST',
-            url: 'bookmark_add.php',
-            data: {
-              mode: 'add',
-              tt: that.getPixivOfficial().token,
-              id: that.getPixivOfficial().contentId,
-              type: 'illust',
-              tag: mb.$bookmarkTag_.val(),
-              comment: mb.$bookmarkComment_.val(),
-              restrict: that.restrict,
-            },
-          })
+          type: 'POST',
+          url: 'bookmark_add.php',
+          data: {
+            mode: 'add',
+            tt: that.getPixivOfficial().token,
+            id: that.getPixivOfficial().contentId,
+            type: 'illust',
+            tag: mb.$bookmarkTag_.val(),
+            comment: mb.$bookmarkComment_.val(),
+            restrict: that.restrict,
+          },
+        })
           .done(function() {
             // 追加後の編集のときだけ見た目上の後処理。編集時には何もしない。
             const $mainBmrkBtn = that.getPixivOfficial().bookmarkButton;
-            if (that.getPixivOfficial().bookmarkButtonText == PixivOfficial.BOOKMARK_TEXT.ADD) {
+            if (that.getPixivOfficial().bookmarkButtonText === PixivOfficial.BOOKMARK_TEXT.ADD) {
               $mainBmrkBtn.addClass('bookmarked');
               $mainBmrkBtn.addClass('edit-bookmark');
               $mainBmrkBtn.removeClass('add-bookmark');
@@ -390,31 +391,32 @@ THE SOFTWARE.
             mb.$modalPanel_.hide();
           })
           .fail(function(jqXHR, textStatus, errorThrown) {
-            alert('ブックマークに失敗しました\nステータスコード:' + jqXHR.status + '\n' + textStatus + '\n' + errorThrown);
+            alert('ブックマークに失敗しました\nステータスコード:' +
+             jqXHR.status + '\n' + textStatus + '\n' + errorThrown);
           });
-      }).bind(this));
+      }.bind(this));
 
 
       // ブックマーク解除ボタンの処理
-      mb.$bookmarkDelButton_.click((function() {
+      mb.$bookmarkDelButton_.click(function() {
         const that = this;
         $.ajax({
-            type: 'POST',
-            url: 'bookmark_setting.php',
-            data: {
-              "del": 'ブックマーク解除',
-              "tt": that.getPixivOfficial().token,
-              "p": '1',
-              "untagged": '0',
-              "rest": 'show',
-              'book_id[]': mb.hiddenParam.bookId_,
-            },
-          })
+          type: 'POST',
+          url: 'bookmark_setting.php',
+          data: {
+            'del': 'ブックマーク解除',
+            'tt': that.getPixivOfficial().token,
+            'p': '1',
+            'untagged': '0',
+            'rest': 'show',
+            'book_id[]': mb.hiddenParam.bookId_,
+          },
+        })
           .done(function() {
             // 302が帰ってくるせいでdoneには入ってこない。
           })
           .fail(function(jqXHR, textStatus, errorThrown) {
-            if (jqXHR.status == 302) {
+            if (jqXHR.status === 302) {
               // 見た目上の後処理を行う
               const $mainBmrkBtn = that.getPixivOfficial().bookmarkButton;
               $mainBmrkBtn.addClass('add-bookmark');
@@ -428,84 +430,88 @@ THE SOFTWARE.
               // 処理完了後にモーダルを閉じる
               mb.$modalPanel_.hide();
             } else {
-              alert('ブックマーク解除に失敗しました\nステータスコード:' + jqXHR.status + '\n' + textStatus + '\n' + errorThrown);
+              alert('ブックマーク解除に失敗しました\nステータスコード:' +
+               jqXHR.status + '\n' + textStatus + '\n' + errorThrown);
             }
           });
-      }).bind(this));
+      }.bind(this));
 
 
       // モーダルフォームのいいねボタンの処理
-      mb.$niceButton_.click((function() {
+      mb.$niceButton_.click(function() {
         const that = this;
         $.ajax({
-            url: 'rpc_rating.php',
-            type: 'POST',
-            data: {
-              mode: 'save',
-              i_id: that.getPixivOfficial().contentId,
-              score: '10',
-              u_id: that.getPixivOfficial().useId,
-              tt: that.getPixivOfficial().token,
-              qr: 'false',
-            },
-          })
+          url: 'rpc_rating.php',
+          type: 'POST',
+          data: {
+            mode: 'save',
+            i_id: that.getPixivOfficial().contentId,
+            score: '10',
+            u_id: that.getPixivOfficial().useId,
+            tt: that.getPixivOfficial().token,
+            qr: 'false',
+          },
+        })
           .done(function() {
             // かなり乱暴だけど元のいいねボタンは削除(仕様の把握ができなかった)
             that.getPixivOfficial().niceButton.remove();
             mb.$niceButton_.attr('disabled', true);
           })
           .fail(function(jqXHR, textStatus, errorThrown) {
-            alert('[いいね]に失敗しました\nステータスコード:' + jqXHR.status + '\n' + textStatus + '\n' + errorThrown);
+            alert('[いいね]に失敗しました\nステータスコード:' +
+             jqXHR.status + '\n' + textStatus + '\n' + errorThrown);
           });
-      }).bind(this));
+      }.bind(this));
 
 
       // モーダルブクマ表示ボタンの処理
-      mb.$showButton_.click((function() {
+      mb.$showButton_.click(function() {
         const that = this;
         const bmrkBtnText = that.getPixivOfficial().bookmarkButtonText;
 
         // モーダル側のブクマボタンのテキストも追従する
         mb.$bookmarkAddButton_.val(bmrkBtnText);
         // ブクマ編集の場合は現在の設定を取得して反映
-        if (bmrkBtnText == PixivOfficial.BOOKMARK_TEXT.EDIT) {
+        if (bmrkBtnText === PixivOfficial.BOOKMARK_TEXT.EDIT) {
           // 最初の表示のみブックマーク編集ページからbookId[]と現在の公開設定を取得
-          if (that.bookId == null) {
-              let cond = {
-                type: 'GET',
-                url: 'bookmark_add.php',
+          if (that.bookId === null) {
+            let cond = {
+              type: 'GET',
+              url: 'bookmark_add.php',
+            };
+
+            if (that.getPixivOfficial().artType === 'illust') {
+              cond.data = {
+                type: that.getPixivOfficial().artType,
+                illust_id: that.getPixivOfficial().contentId,
               };
-
-              if (that.getPixivOfficial().artType == 'illust') {
-                cond['data'] = {
-                  type: that.getPixivOfficial().artType,
-                  illust_id: that.getPixivOfficial().contentId,
-                };
-              } else {
+            } else {
                 // novelのときはtypeいらない
-                cond['data'] = {
-                  id: that.getPixivOfficial().contentId,
-                };
-              }
+              cond.data = {
+                id: that.getPixivOfficial().contentId,
+              };
+            }
 
-              $.ajax(cond).done(function(data) {
-                that.bookId = $(data).find('input[name="book_id[]"]').val();
-                that.restrict = $(data).find('input[name="restrict"]:checked').val();
-                mb.$bookmarkAddButton_.attr('disabled', false);
-                mb.$bookmarkDelButton_.attr('disabled', false);
-              })
+            $.ajax(cond).done(function(data) {
+              that.bookId = $(data).find('input[name="book_id[]"]').val();
+              that.restrict = $(data).find('input[name="restrict"]:checked').val();
+              mb.$bookmarkAddButton_.attr('disabled', false);
+              mb.$bookmarkDelButton_.attr('disabled', false);
+            })
                 .fail(function(jqXHR, textStatus, errorThrown) {
-                alert('ブックマーク情報の取得に失敗しました\nもう一度ページを読み込むか\nステータスコード:' + jqXHR.status + '\n' + textStatus + '\n' + errorThrown);
-              });
+                  alert('ブックマーク情報の取得に失敗しました\n'+
+                  'もう一度ページを読み込むか\nステータスコード:' +
+                   jqXHR.status + '\n' + textStatus + '\n' + errorThrown);
+                });
           }
           mb.$bookmarkDelButton_.show();
         } else {
-          if (that.bookId == null) that.restrict = 0;
+          if (that.bookId === null) {that.restrict = 0;}
           mb.$bookmarkAddButton_.attr('disabled', false);
           mb.$bookmarkDelButton_.hide();
         }
         mb.$modalPanel_.show();
-      }).bind(this));
+      }.bind(this));
     }
 
 
@@ -556,7 +562,7 @@ THE SOFTWARE.
   (function init() {
     // 条件不明だがたまにads_areaというクラスが設定されたiframeに反応して多重読み込みになっているので制限をかける
     // 本ページのbodyにはclass属性が設定されていないがiframeには設定されている
-    if ($('body').attr('class') == '') {
+    if ($('body').attr('class') === '') {
       new ModalBookmark($('.bookmark-container'));
     }
   })();
