@@ -3,7 +3,7 @@
 // @namespace   unote.hatenablog.com
 // @include     https://www.pixiv.net/member_illust.php?mode=medium&illust_id=*
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
-// @version     1.1.1
+// @version     1.2.0
 // @grant       none
 // ==/UserScript==
 
