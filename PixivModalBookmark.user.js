@@ -183,6 +183,18 @@ THE SOFTWARE.
       return document.getElementsByClassName('score')[0].querySelector('.rated') !== null;
     }
 
+
+    /**
+     * incrementNice - いいねカウントをインクリメントする
+     *
+     * @return {void}  
+     */
+    incrementNice(){
+      const score = document.getElementsByClassName('score')[0];
+      const rateCount = score.getElementsByClassName('rated-count')[0];
+      const rateCountVal = Number.parseInt(rateCount.textContent) + 1;
+      rateCount.textContent = rateCountVal;
+    }
   }
 
 
@@ -483,11 +495,19 @@ THE SOFTWARE.
           req.onreadystatechange = function() {
             if (req.readyState === 4) {
               if (req.status === 200) {
-                // かなり乱暴だけど元のいいねボタンは削除(仕様の把握ができなかった)
                 const officialNiceBtn = self.getNiceButton();
                 // todo:ここsuper使いたい
                 console.log(officialNiceBtn);
-                officialNiceBtn.parentNode.removeChild(officialNiceBtn);
+                officialNiceBtn.classList.add('rated');
+                officialNiceBtn.getElementsByClassName('submit')[0].style.display = 'none';
+                officialNiceBtn.getElementsByClassName('done')[0].style.display = 'inline';
+                const resultLbl = document.createElement('p');
+                resultLbl.classList.add('result');
+                resultLbl.textContent = '（いいね！できるのは1日1回です）';
+                officialNiceBtn.parentNode.appendChild(resultLbl);
+                self.incrementNice();
+                officialNiceBtn.disabled = true;
+                // officialNiceBtn.parentNode.removeChild(officialNiceBtn);
                 mb.niceButton_.disabled = true;
                 console.log(mb.niceButton_.disabled);
               } else {
