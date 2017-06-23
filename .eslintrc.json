@@ -24,7 +24,6 @@
     "brace-style": ["warn", "1tbs", {"allowSingleLine": true}],
     "no-self-compare": "error",
     "no-redeclare": "error",
-    "no-param-reassign": "error",
     "no-multi-spaces": "warn",
     "no-loop-func": "error",
     "no-labels": "error",
