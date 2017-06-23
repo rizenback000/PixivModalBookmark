@@ -2,7 +2,7 @@
 // @name        PixivModalBookmark
 // @namespace   unote.hatenablog.com
 // @include     https://www.pixiv.net/member_illust.php?mode=medium&illust_id=*
-// @version     1.3.0
+// @version     1.3.1
 // @grant       none
 // ==/UserScript==
 
@@ -430,6 +430,9 @@ THE SOFTWARE.
         req.setRequestHeader('content-type',
           'application/x-www-form-urlencoded;charset=UTF-8');
         req.send(hashToQuery(query));
+
+        //いいね
+        mb.niceButton_.click();
       });
 
 
@@ -475,39 +478,41 @@ THE SOFTWARE.
 
       // モーダルフォームのいいねボタンの処理
       mb.niceButton_.addEventListener('click', function() {
-        const req = new XMLHttpRequest();
-
-        req.onreadystatechange = function() {
-          if (req.readyState === 4) {
-            if (req.status === 200) {
-              // かなり乱暴だけど元のいいねボタンは削除(仕様の把握ができなかった)
-              const officialNiceBtn = self.getNiceButton();
-              // todo:ここsuper使いたい
-              console.log(officialNiceBtn);
-              officialNiceBtn.parentNode.removeChild(officialNiceBtn);
-              mb.niceButton_.disabled = true;
-              console.log(mb.niceButton_.disabled);
+        if (!self.isRated()){
+          const req = new XMLHttpRequest();
+          req.onreadystatechange = function() {
+            if (req.readyState === 4) {
+              if (req.status === 200) {
+                // かなり乱暴だけど元のいいねボタンは削除(仕様の把握ができなかった)
+                const officialNiceBtn = self.getNiceButton();
+                // todo:ここsuper使いたい
+                console.log(officialNiceBtn);
+                officialNiceBtn.parentNode.removeChild(officialNiceBtn);
+                mb.niceButton_.disabled = true;
+                console.log(mb.niceButton_.disabled);
+              } else {
+                throw new Error('いいねの通信に失敗した可能性があります。');
+              }
             } else {
-              throw new Error('いいねの通信に失敗した可能性があります。');
+              // result.innerHTML = "通信中...";
             }
-          } else {
-            // result.innerHTML = "通信中...";
-          }
-        };
+          };
 
-        const query = {
-          mode: 'save',
-          i_id: self.getContentId(),
-          score: '10',
-          u_id: self.getUserId(),
-          tt: self.getToken(),
-          qr: 'false',
-        };
+          const query = {
+            mode: 'save',
+            i_id: self.getContentId(),
+            score: '10',
+            u_id: self.getUserId(),
+            tt: self.getToken(),
+            qr: 'false',
+          };
 
-        req.open('POST', 'rpc_rating.php', true);
-        req.setRequestHeader('content-type',
-          'application/x-www-form-urlencoded;charset=UTF-8');
-        req.send(hashToQuery(query));
+          req.open('POST', 'rpc_rating.php', true);
+          req.setRequestHeader('content-type',
+            'application/x-www-form-urlencoded;charset=UTF-8');
+          req.send(hashToQuery(query));
+        }
+
       });
 
 
