@@ -2,7 +2,7 @@
 // @name        PixivModalBookmark
 // @namespace   unote.hatenablog.com
 // @include     https://www.pixiv.net/member_illust.php?mode=medium&illust_id=*
-// @version     1.3.1
+// @version     1.3.2
 // @grant       none
 // ==/UserScript==
 
@@ -187,7 +187,7 @@ THE SOFTWARE.
     /**
      * incrementNice - いいねカウントをインクリメントする
      *
-     * @return {void}  
+     * @return {void}
      */
     incrementNice(){
       const score = document.getElementsByClassName('score')[0];
@@ -489,15 +489,13 @@ THE SOFTWARE.
 
 
       // モーダルフォームのいいねボタンの処理
-      mb.niceButton_.addEventListener('click', function() {
+      mb.niceButton_.addEventListener('click', ()=>{
         if (!self.isRated()){
           const req = new XMLHttpRequest();
-          req.onreadystatechange = function() {
+          req.onreadystatechange = ()=>{
             if (req.readyState === 4) {
               if (req.status === 200) {
-                const officialNiceBtn = self.getNiceButton();
-                // todo:ここsuper使いたい
-                console.log(officialNiceBtn);
+                const officialNiceBtn = super.getNiceButton();
                 officialNiceBtn.classList.add('rated');
                 officialNiceBtn.getElementsByClassName('submit')[0].style.display = 'none';
                 officialNiceBtn.getElementsByClassName('done')[0].style.display = 'inline';
