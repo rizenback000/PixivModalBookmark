@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name        PixivModalBookmark
 // @namespace   unote.hatenablog.com
-// @include     https://www.pixiv.net/member_illust.php?mode=medium&illust_id=*
-// @version     1.3.2
+// @include     https://www.pixiv.net/member_illust.php?*
+// @version     1.3.3
 // @grant       none
 // ==/UserScript==
 
@@ -59,7 +59,6 @@ THE SOFTWARE.
      */
     constructor() {
       console.log('initialize PixivOfficial start');
-      const commentForm = document.getElementsByClassName('_comment-form')[0];
       const bookmarkButton = document.getElementsByClassName('_bookmark-toggle-button')[0];
       const bookmarkButtonDescription = bookmarkButton.getElementsByClassName('description')[0];
       const niceButton = document.getElementsByClassName('_nice-button js-nice-button')[0];
@@ -75,17 +74,13 @@ THE SOFTWARE.
       this.pixivOfficial.eigenValues = {
         // pixiv.～はpixiv公式のグローバル変数(?)
         artType_: pixiv.context.type,
-        token_: commentForm.querySelector('input[name=tt]').value,
+        token_: modalBookmark.querySelector('input[name=tt]').value,
         userId_: pixiv.user.id,
         contentId_: null,
       };
 
       const ev = this.pixivOfficial.eigenValues;
-      if (ev.artType_ === 'illust') {
-        ev.contentId_ = commentForm.querySelector('input[name=illust_id]').value;
-      } else {
-        ev.contentId_ = commentForm.querySelector('input[name=id]').value;
-      }
+      ev.contentId_ = modalBookmark.querySelector('input[name=id]').value;
       console.log('initialize PixivOfficial end');
     }
 
