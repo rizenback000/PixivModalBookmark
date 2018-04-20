@@ -2,7 +2,7 @@
 // @name        PixivModalBookmark
 // @namespace   unote.hatenablog.com
 // @include     https://www.pixiv.net/member_illust.php?*
-// @version     1.3.3
+// @version     1.3.4
 // @grant       none
 // ==/UserScript==
 
