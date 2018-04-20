@@ -85,18 +85,18 @@ THE SOFTWARE.
       Object.keys(pixivOfficialScripts).some(function(key){
         if ( pixivOfficialScripts[key].textContent.match(/pixiv.context.type ?= ?\"(.+)\"/)){
           ev.artType_ = RegExp.$1;
-          console.log(RegExp.$1);
+          // console.log(RegExp.$1);
         }
 
         if ( pixivOfficialScripts[key].textContent.match(/pixiv.user.id ?= ?\"(.+)\"/)){
           ev.userId_ = RegExp.$1;
-          console.log(RegExp.$1);
+          // console.log(RegExp.$1);
         }
 
         return (ev.userId_ !== null && ev.artType_ !== null);
       });
 
-      console.log(ev);
+      // console.log(ev);
 
       console.log('initialize PixivOfficial end');
     }
@@ -421,7 +421,6 @@ THE SOFTWARE.
             if (req.status === 200) {
               // 追加後の編集のときだけ見た目上の後処理。編集時には何もしない。
               const mainBmrkBtn = self.getBookmarkButton();
-              console.log(mainBmrkBtn);
               if (self.bookmarkButtonText === PixivOfficial.CONSTANTS.BOOKMARK_TEXT.ADD) {
                 self.bookmarkButtonText = PixivOfficial.CONSTANTS.BOOKMARK_TEXT.EDIT;
                 mainBmrkBtn.classList.add('bookmarked');
@@ -449,7 +448,7 @@ THE SOFTWARE.
           comment: mb.bookmarkComment_.value,
           restrict: self.restrict,
         };
-        console.log(query);
+        // console.log(query);
         req.open('POST', 'bookmark_add.php', true);
         req.setRequestHeader('content-type',
           'application/x-www-form-urlencoded;charset=UTF-8');
