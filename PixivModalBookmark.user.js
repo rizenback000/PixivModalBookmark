@@ -64,6 +64,8 @@ THE SOFTWARE.
       const niceButton = document.getElementsByClassName('_nice-button js-nice-button')[0];
       const modalBookmark = document.getElementsByClassName('bookmark-add-modal')[0];
 
+      const pixivOfficialScripts = document.getElementsByTagName('script');
+
       this.pixivOfficial = {
         bookmarkButton_: bookmarkButton,
         bookmarkButtonDescription_: bookmarkButtonDescription,
@@ -72,15 +74,30 @@ THE SOFTWARE.
       };
 
       this.pixivOfficial.eigenValues = {
-        // pixiv.～はpixiv公式のグローバル変数(?)
-        artType_: pixiv.context.type,
+        artType_: null,
         token_: modalBookmark.querySelector('input[name=tt]').value,
-        userId_: pixiv.user.id,
-        contentId_: null,
+        userId_: null,
+        contentId_: modalBookmark.querySelector('input[name=id]').value,
       };
 
       const ev = this.pixivOfficial.eigenValues;
-      ev.contentId_ = modalBookmark.querySelector('input[name=id]').value;
+
+      Object.keys(pixivOfficialScripts).some(function(key){
+        if ( pixivOfficialScripts[key].textContent.match(/pixiv.context.type ?= ?\"(.+)\"/)){
+          ev.artType_ = RegExp.$1;
+          console.log(RegExp.$1);
+        }
+
+        if ( pixivOfficialScripts[key].textContent.match(/pixiv.user.id ?= ?\"(.+)\"/)){
+          ev.userId_ = RegExp.$1;
+          console.log(RegExp.$1);
+        }
+
+        return (ev.userId_ !== null && ev.artType_ !== null);
+      });
+
+      console.log(ev);
+
       console.log('initialize PixivOfficial end');
     }
 
@@ -439,7 +456,7 @@ THE SOFTWARE.
         req.send(hashToQuery(query));
 
         //いいね
-        mb.niceButton_.click();
+        if (!self.isRated()) mb.niceButton_.click();
       });
 
 
@@ -448,7 +465,8 @@ THE SOFTWARE.
         const req = new XMLHttpRequest();
         req.onreadystatechange = function() {
           if (req.readyState === 4) {
-            if (req.status === 302) {
+            //Chromeだと200も302も返ってこない。
+            if (req.status === 200 || req.status === 0) {
               // 見た目上の後処理を行う
               const mainBmrkBtn = self.getBookmarkButton();
               mainBmrkBtn.classList.add('add-bookmark');
@@ -477,8 +495,10 @@ THE SOFTWARE.
         };
 
         req.open('POST', 'bookmark_setting.php', true);
-        req.setRequestHeader('content-type',
-          'application/x-www-form-urlencoded;charset=UTF-8');
+        req.setRequestHeader('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8');
+        req.setRequestHeader('Content-type',
+          'application/x-www-form-urlencoded; charset=UTF-8');
+        // req.setRequestHeader('Referer', 'https://www.pixiv.net/bookmark_add.php?type='+self.getArtType()+'&illust_id='+self.getContentId());
         req.send(hashToQuery(query));
       });
 
@@ -502,27 +522,31 @@ THE SOFTWARE.
                 officialNiceBtn.disabled = true;
                 // officialNiceBtn.parentNode.removeChild(officialNiceBtn);
                 mb.niceButton_.disabled = true;
-                console.log(mb.niceButton_.disabled);
               } else {
                 throw new Error('いいねの通信に失敗した可能性があります。');
               }
             } else {
               // result.innerHTML = "通信中...";
+              // console.log(req.status);
             }
           };
 
           const query = {
             mode: 'save',
             i_id: self.getContentId(),
-            score: '10',
             u_id: self.getUserId(),
-            tt: self.getToken(),
             qr: 'false',
+            score: '10',
+            tt: self.getToken(),
           };
 
           req.open('POST', 'rpc_rating.php', true);
-          req.setRequestHeader('content-type',
-            'application/x-www-form-urlencoded;charset=UTF-8');
+          req.setRequestHeader('Accept','application/json, text/javascript, */*; q=0.01');
+          req.setRequestHeader('Content-type',
+            'application/x-www-form-urlencoded; charset=UTF-8');
+          // req.setRequestHeader('Referer',
+          //     'https://www.pixiv.net/member_illust.php?mode=medium&illust_id='+self.getContentId());
+          console.log(hashToQuery(query));
           req.send(hashToQuery(query));
         }
 
@@ -540,7 +564,6 @@ THE SOFTWARE.
         if (bmrkBtnText === PixivOfficial.CONSTANTS.BOOKMARK_TEXT.EDIT) {
           // 最初の表示のみブックマーク編集ページからbookId[]と現在の公開設定を取得
           if (self.bookId === null) {
-            console.log('awe1112');
             const req = new XMLHttpRequest();
             req.onreadystatechange = function() {
               if (req.readyState === 4) {
@@ -554,6 +577,7 @@ THE SOFTWARE.
                 }
               } else {
                 // result.innerHTML = "通信中...";
+                // console.log(req.status);
               }
             };
 
@@ -561,6 +585,7 @@ THE SOFTWARE.
               type: self.getArtType(),
               illust_id: self.getContentId(),
             };
+            // console.log('bookmark_add.php?' + hashToQuery(query));
             req.open('GET', 'bookmark_add.php?' + hashToQuery(query), true);
             req.send();
           }
