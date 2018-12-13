@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixvModalBookmark
-// @namespace    http://tampermonkey.net/
-// @version      2.0.0
+// @namespace    http://unote.hatenablog.com/
+// @version      2.0.1
 // @description  Pixivのブックマークをモーダル表示させる
 // @author       rizenback000
 // @match        https://www.pixiv.net/member_illust.php?*
