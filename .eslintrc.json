@@ -4,7 +4,6 @@
   },
   "env": {
     "browser": true,
-    "jquery": true
   },
   "extends": "google",
   "rules" : {
@@ -21,7 +20,7 @@
     "comma-style": ["error", "last"],
     "indent": ["error", 2],
     "comma-spacing": ["warn", {"before": false, "after": true}],
-    "brace-style": ["warn", "1tbs", {"allowSingleLine": true}],
+    "brace-style": ["error", "1tbs", {"allowSingleLine": true}],
     "no-self-compare": "error",
     "no-redeclare": "error",
     "no-multi-spaces": "warn",
@@ -40,13 +39,20 @@
     "dot-notation": "error",
     "default-case": "warn",
     "block-scoped-var": "error",
-    "max-len": ["error", 100, 2]
+    "max-len": ["error", 100, 2],
+    "block-spacing": ["error", "always"],
+    "camelcase": "error",
+    "prefer-const": "error",
+    "spaced-comment": "error",
+    "no-const-assign": "warn"
   },
   "globals": {
     "GM_listValues": false,
     "GM_getValue": false,
     "GM_setValue": false,
     "GM_deleteValue": false,
-    "pixiv": false
+    "GM_info": false,
+    "pixiv": false,
+    "Set": false
   }
 }
