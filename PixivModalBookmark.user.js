@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixvModalBookmark
 // @namespace    http://unote.hatenablog.com/
-// @version      2.0.3
+// @version      2.0.4
 // @description  Pixivのブックマークをモーダル表示させる
 // @author       rizenback000
 // @match        https://www.pixiv.net/member_illust.php?*illust_id=*
@@ -14,7 +14,8 @@
 // 1.3.0　jQuery使わないバージョン
 // 2.0.0  iframeを使ったバージョン
 // 2.0.1　仕様変更に対応
-// 2.0.3　バグ対応(確実に読み込めなかった)
+// 2.0.2　バグ対応(確実に読み込めなかった)
+// 2.0.4  Pixiv側のonclickにイベントを取られてる可能性があったのでonclick追加
 (function () {
   'use strict';
   const modal = document.createElement('div');
@@ -139,9 +140,11 @@
         iframe.src = getContentsUrl();
       }
       favIcon.removeAttribute('preload');
+      return 0;
     };
     favIcon.removeEventListener('click', favClick);
     favIcon.addEventListener('click', favClick);
+    favIcon.onclick = favClick;
 
     // iframeプリロード
     const favEnter = e => {
